@@ -5,13 +5,13 @@
 
 struct Board;
 
-int board_alloc(struct Board **s);
-void board_free(struct Board *s);
+int board_alloc(struct Board **b);
+void board_free(struct Board *b);
 
-int board_load(struct Board *s, char *cells);
+int board_load(struct Board *b, char *cells);
 
-bool board_next_alive(struct Board *s, int *x, int *y);
-int board_step(struct Board *s);
+bool board_next_alive(struct Board *b, int *x, int *y);
+int board_step(struct Board *b);
 
 
 #endif //_BOARD_H
