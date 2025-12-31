@@ -1,5 +1,5 @@
-#include <sys/select.h>
-#include <stdio.h>
+#include <stdlib.h>
+#include <poll.h>
 #include "board.h"
 #include "ui.h"
 
@@ -32,31 +32,39 @@
 
 int main(int argc, char **argv) {
 
+    int ret = 0;
     struct Board *board = NULL;
-    struct UI *ui = NULL;
 
-    board_alloc(&board);
-    board_load(board, INITIAL_BOARD);
-
-    ui_alloc(&ui);
-    ui_init(ui, 25, 25);
-
-    while (1) {
-        ui_set_dead_all(ui);
-        ui_update(ui);
-
-        int x = -1, y = 0;
-        while (board_next_alive(board, &x, &y)) {
-            ui_set_alive(ui, x, y);
-        }
-        ui_update(ui);
-        fflush(stdout);
-        board_step(board);
-        select(0, NULL, NULL, NULL, &((struct timeval) {.tv_sec = 0, .tv_usec = 250000}));
+    ret = board_alloc(&board);
+    if (ret) {
+        goto exit;
+    }
+    ret = board_load(board, INITIAL_BOARD);
+    if (ret) {
+        goto exit;
     }
 
-    board_free(board);
-    ui_free(ui);
+    ret = ui_init(25, 25);
+    if (ret) {
+        goto exit;
+    }
 
-    return 0;
+    while (1) {
+        ui_clear();
+        int x = -1, y = -1;
+        while (board_next_alive(board, &x, &y)) {
+            ui_set_alive(x, y);
+        }
+
+        board_step(board);
+        ui_update();
+        poll(NULL, 0, 250);
+    }
+
+
+exit:
+    ui_cleanup();
+    board_free(board);
+
+    return ret;
 }

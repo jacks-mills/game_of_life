@@ -92,7 +92,7 @@ bool board_next_alive(struct Board *b, int *x, int *y) {
     return false;
 }
 
-int board_step(struct Board *b) {
+void board_step(struct Board *b) {
     int offsets[8] = {-b->width -1, -b->width, -b->width + 1, -1, 1, b->width -1, b->width, b->width + 1};
     for (int i = 0; i < b->width * b->height; i++) {
         int neighbours = 0;
@@ -117,8 +117,6 @@ int board_step(struct Board *b) {
     char *tmp = b->front;
     b->front = b->back;
     b->back = tmp;
-
-    return 1;
 }
 
 void board_print(struct Board *b) {
